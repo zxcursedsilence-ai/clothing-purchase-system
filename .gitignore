@@ -1,27 +1,19 @@
-# Python
-__pycache__/
+# Django
+*.log
+*.pot
 *.pyc
-*.pyo
-*.pyd
-*.py.class
-*.so
-.Python
-env/
-venv/
+__pycache__/
+db.sqlite3
+db.sqlite3-journal
+media/
+
+# Virtual Environment
 .venv/
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.egg-info/
-.eggs/
-dist/
-build/
-sdist/
-*.egg
-wheelhouse/
-pip-wheel-metadata/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
 # PyCharm
 .idea/
@@ -29,18 +21,6 @@ pip-wheel-metadata/
 *.ipr
 *.iws
 out/
-*.log
-*.tmp
-*.temp
-*.swp
-*.swo
-*~
-
-# Database
-*.db
-*.sqlite3
-*.sqlite
-instance/
 
 # OS
 .DS_Store
@@ -51,16 +31,12 @@ instance/
 ehthumbs.db
 Thumbs.db
 
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
+# Backups
+*.bak
+*.backup
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
+# Secrets
+*.env
+*.env.local
+.env
+.secrets
