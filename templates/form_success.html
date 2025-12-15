@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Успешная отправка</title>
+</head>
+<body>
+    {% include 'navigator.html' %}
+
+    <h1>Данные успешно сохранены!</h1>
+
+    <h2>Введенные данные:</h2>
+    <ul>
+        <li><strong>ФИО:</strong> {{ buyer_data.name }}</li>
+        <li><strong>Email:</strong> {{ buyer_data.email }}</li>
+        <li><strong>Город:</strong> {{ buyer_data.city }}</li>
+        <li><strong>Дата регистрации:</strong> {{ buyer_data.registration_date }}</li>
+    </ul>
+
+    <p>Данные добавлены в файлы buyers.txt и buyers.xlsx</p>
+
+    <a href="/buyer-form/">Добавить еще одного покупателя</a>
+</body>
+</html>

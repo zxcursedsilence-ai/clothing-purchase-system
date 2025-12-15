@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск одежды</title>
+</head>
+<body>
+    {% include 'navigator.html' %}
+
+    <h1>Поиск одежды</h1>
+
+    <form method="get">
+        {% csrf_token %}
+
+        <h3>Одиночный выбор:</h3>
+        {{ form.clothes_type.label_tag }}
+        {{ form.clothes_type }}
+
+        <h3>Множественный выбор (чекбоксы):</h3>
+        {{ form.size.label_tag }}
+        {% for checkbox in form.size %}
+            <div>
+                {{ checkbox.tag }} {{ checkbox.choice_label }}
+            </div>
+        {% endfor %}
+
+        <h3>Ценовой диапазон:</h3>
+        {{ form.min_price.label_tag }}
+        {{ form.min_price }}<br><br>
+
+        {{ form.max_price.label_tag }}
+        {{ form.max_price }}<br><br>
+
+        <button type="submit">Искать</button>
+    </form>
+</body>
+</html>

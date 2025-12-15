@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .crud-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .crud-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #4CAF50;
+    }
+    .btn-crud {
+        padding: 8px 16px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .btn-create {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .btn-edit {
+        background-color: #2196F3;
+        color: white;
+    }
+    .btn-delete {
+        background-color: #f44336;
+        color: white;
+    }
+    .btn-view {
+        background-color: #9C27B0;
+        color: white;
+    }
+    .table-crud {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .table-crud th, .table-crud td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    .table-crud th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .table-crud tr:hover {
+        background-color: #f5f5f5;
+    }
+    .form-crud {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="crud-container">
+    {% block crud_content %}
+    {% endblock %}
+</div>
+{% endblock %}

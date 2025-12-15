@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Покупка одежды{% endblock %}</title>
+
+    <!-- Стили (для Community версии) -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 15px;
+        }
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        nav a:hover {
+            color: #4CAF50;
+        }
+        .content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        footer {
+            margin-top: 30px;
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <h1>{% block header %}Система учета покупок одежды{% endblock %}</h1>
+        <p>Вариант 11</p>
+    </header>
+
+    <nav>
+        {% include 'navigator.html' %}
+    </nav>
+
+    <div class="content">
+        {% block content %}
+        <!-- Содержимое страницы будет здесь -->
+        {% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; {% now "Y" %} Покупка одежды. Все права защищены.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Данные из файлов{% endblock %}
+
+{% block header %}Работа с файлами данных{% endblock %}
+
+{% block extra_css %}
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .data-section {
+        margin: 30px 0;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1>Данные из папки tablica</h1>
+
+    <!-- Остальное содержимое без изменений -->
+    <div class="data-section">
+        <h2>Простые данные:</h2>
+        <ul>
+            <li>Строка: {{ simple.string }}</li>
+            <li>Число: {{ simple.number }}</li>
+            <li>Дробное: {{ simple.float_number }}</li>
+            <li>Булево: {{ simple.boolean }}</li>
+            <li>Дата: {{ simple.date }}</li>
+        </ul>
+    </div>
+
+    <!-- ... остальные секции ... -->
+{% endblock %}

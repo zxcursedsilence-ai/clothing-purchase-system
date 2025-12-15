@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результаты поиска</title>
+</head>
+<body>
+    {% include 'navigator.html' %}
+    <h2>Результаты поиска</h2>
+    <p>{{ message }}</p>
+    <h3>Параметры запроса:</h3>
+    <ul>
+        <li>Название: {{ search_name }}</li>
+        <li>Минимальная цена: {{ min_price }}</li>
+        <li>Максимальная цена: {{ max_price }}</li>
+    </ul>
+</body>
+</html>
