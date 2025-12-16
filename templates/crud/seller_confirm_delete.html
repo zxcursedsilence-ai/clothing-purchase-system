@@ -1,0 +1,21 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Удаление продавца</h1>
+</div>
+
+<div class="form-crud">
+    <p>Вы уверены, что хотите удалить продавца <strong>{{ seller }}</strong>?</p>
+    {% if seller.profile %}
+    <p class="text-danger">Внимание: Профиль продавца также будет удален!</p>
+    {% endif %}
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-crud btn-delete">Да, удалить</button>
+        <a href="{% url 'seller_detail' seller.id %}" class="btn-crud btn-view">Отмена</a>
+    </form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,26 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>{% if object %}Редактировать размер{% else %}Добавить размер{% endif %}</h1>
+    <a href="{% url 'size_list' %}" class="btn-crud btn-view">← Назад</a>
+</div>
+
+<form method="post" class="form-crud">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_size_value">Значение размера:</label>
+        {{ form.size_value }}
+    </div>
+    <div class="form-group">
+        <label for="id_system">Система размеров:</label>
+        {{ form.system }}
+    </div>
+    <div class="form-group">
+        <label for="id_description">Описание:</label>
+        {{ form.description }}
+    </div>
+    <button type="submit" class="btn-crud btn-create">Сохранить</button>
+</form>
+{% endblock %}
+

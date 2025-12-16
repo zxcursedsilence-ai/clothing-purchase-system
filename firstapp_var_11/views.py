@@ -4,17 +4,22 @@ from django.conf import settings
 import os
 from openpyxl import load_workbook
 from .forms import BuyerForm, ClothesSearchForm, PurchaseForm
-from .models import Buyer, Purchase, Assortment, AssortmentSize
+from .models import Buyer, Purchase, Assortment, AssortmentSize, ClothesType, Size, Seller
+from django.db.models import Count, Sum, Q
+from datetime import datetime, timedelta
 
-
-# ============================================================================
-# ОСНОВНЫЕ ПРЕДСТАВЛЕНИЯ ДЛЯ НАВИГАТОРА (Задача 1.1)
-# ============================================================================
 
 def index(request):
-    """Главная страница"""
-    return render(request, 'index.html')
-
+    # Собираем статистику для главной страницы
+    context = {
+        'total_customers': Buyer.objects.count(),
+        'total_purchases': Purchase.objects.count(),
+        'total_revenue': Purchase.objects.aggregate(
+            total=Sum('total_amount')
+        )['total'] or 0,
+        'total_items': Assortment.objects.count(),
+    }
+    return render(request, 'index.html', context)
 
 def navigator(request):
     """Страница навигатора"""
@@ -303,3 +308,296 @@ def handler404(request, exception):
 def handler500(request):
     """Обработчик 500 ошибки"""
     return render(request, '500.html', status=500)
+
+
+# ============================================================================
+# АНАЛИТИЧЕСКИЕ ФУНКЦИИ
+# ============================================================================
+
+def sales_stats(request):
+    """Общая статистика продаж"""
+    from django.db.models import Sum, Avg, Count
+    from datetime import datetime, timedelta
+    import json
+    
+    # #region agent log
+    log_path = r'c:\Users\kiril\PycharmProjects\PythonProject_Kursovaya\.cursor\debug.log'
+    try:
+        with open(log_path, 'a', encoding='utf-8') as f:
+            f.write(json.dumps({'location': 'views.py:317', 'message': 'sales_stats entry', 'data': {'hypothesisId': 'C'}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+    except: pass
+    # #endregion
+    
+    try:
+        total_revenue = Purchase.objects.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        avg_purchase = Purchase.objects.aggregate(Avg('total_amount'))['total_amount__avg'] or 0
+        total_purchases = Purchase.objects.count()
+        
+        # Статистика за последние 30 дней
+        thirty_days_ago = datetime.now() - timedelta(days=30)
+        recent_purchases = Purchase.objects.filter(purchase_date__gte=thirty_days_ago)
+        recent_revenue = recent_purchases.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        
+        # #region agent log
+        try:
+            with open(log_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps({'location': 'views.py:330', 'message': 'sales_stats calculations successful', 'data': {'hypothesisId': 'C', 'total_revenue': float(total_revenue), 'total_purchases': total_purchases}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+        except: pass
+        # #endregion
+    except Exception as e:
+        # #region agent log
+        try:
+            with open(log_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps({'location': 'views.py:332', 'message': 'sales_stats failed', 'data': {'hypothesisId': 'C', 'error': str(e), 'error_type': type(e).__name__}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+        except: pass
+        # #endregion
+        raise
+    
+    context = {
+        'total_revenue': total_revenue,
+        'avg_purchase': avg_purchase,
+        'total_purchases': total_purchases,
+        'recent_revenue': recent_revenue,
+        'recent_purchases_count': recent_purchases.count(),
+    }
+    return render(request, 'analytics/sales_stats.html', context)
+
+
+def sales_by_customer(request):
+    """Продажи по покупателям"""
+    from django.db.models import Sum, Count
+    
+    customers_stats = Buyer.objects.annotate(
+        total_purchases=Count('purchases'),
+        total_spent=Sum('purchases__total_amount')
+    ).order_by('-total_spent')
+    
+    context = {
+        'customers_stats': customers_stats,
+    }
+    return render(request, 'analytics/sales_by_customer.html', context)
+
+
+def sales_by_type(request):
+    """Продажи по типам одежды"""
+    from django.db.models import Sum, Count
+    
+    # Здесь нужно будет добавить связь Purchase с Assortment через промежуточную модель
+    # Пока используем данные из Assortment
+    type_stats = ClothesType.objects.annotate(
+        items_count=Count('assortments'),
+        total_value=Sum('assortments__price')
+    ).order_by('-items_count')
+    
+    context = {
+        'type_stats': type_stats,
+    }
+    return render(request, 'analytics/sales_by_type.html', context)
+
+
+def assortment_by_size(request):
+    """Ассортимент по размерам"""
+    from django.db.models import Count, Sum
+    import json
+    import os
+    
+    # #region agent log
+    log_path = r'c:\Users\kiril\PycharmProjects\PythonProject_Kursovaya\.cursor\debug.log'
+    try:
+        with open(log_path, 'a', encoding='utf-8') as f:
+            f.write(json.dumps({'location': 'views.py:373', 'message': 'assortment_by_size entry', 'data': {'hypothesisId': 'A'}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+    except: pass
+    # #endregion
+    
+    try:
+        # #region agent log
+        try:
+            with open(log_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps({'location': 'views.py:378', 'message': 'Before query execution', 'data': {'hypothesisId': 'A', 'query_field': 'assortmentsize__assortment'}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+        except: pass
+        # #endregion
+        
+        size_stats = Size.objects.annotate(
+            items_count=Count('assortmentsize__assortment'),
+            total_quantity=Sum('assortmentsize__quantity')
+        ).order_by('-items_count')
+        
+        # #region agent log
+        try:
+            with open(log_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps({'location': 'views.py:385', 'message': 'Query executed successfully', 'data': {'hypothesisId': 'A', 'result_count': len(list(size_stats))}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+        except: pass
+        # #endregion
+    except Exception as e:
+        # #region agent log
+        try:
+            with open(log_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps({'location': 'views.py:387', 'message': 'Query failed', 'data': {'hypothesisId': 'A', 'error': str(e), 'error_type': type(e).__name__}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+        except: pass
+        # #endregion
+        raise
+    
+    context = {
+        'size_stats': size_stats,
+    }
+    return render(request, 'analytics/assortment_by_size.html', context)
+
+
+def seller_performance(request):
+    """Эффективность продавцов"""
+    import json
+    import os
+    
+    # #region agent log
+    log_path = r'c:\Users\kiril\PycharmProjects\PythonProject_Kursovaya\.cursor\debug.log'
+    try:
+        with open(log_path, 'a', encoding='utf-8') as f:
+            f.write(json.dumps({'location': 'views.py:388', 'message': 'seller_performance entry', 'data': {'hypothesisId': 'B'}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+    except: pass
+    # #endregion
+    
+    # Пока продавцы не связаны с покупками, возвращаем базовую информацию
+    try:
+        # #region agent log
+        try:
+            with open(log_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps({'location': 'views.py:391', 'message': 'Before Seller.objects.all()', 'data': {'hypothesisId': 'B'}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+        except: pass
+        # #endregion
+        
+        sellers = Seller.objects.all()
+        
+        # #region agent log
+        try:
+            with open(log_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps({'location': 'views.py:393', 'message': 'Seller query successful', 'data': {'hypothesisId': 'B', 'sellers_count': sellers.count()}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+        except: pass
+        # #endregion
+    except Exception as e:
+        # #region agent log
+        try:
+            with open(log_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps({'location': 'views.py:395', 'message': 'Seller query failed', 'data': {'hypothesisId': 'B', 'error': str(e), 'error_type': type(e).__name__}, 'timestamp': __import__('time').time() * 1000, 'sessionId': 'debug-session', 'runId': 'run1'}) + '\n')
+        except: pass
+        # #endregion
+        raise
+    
+    context = {
+        'sellers': sellers,
+    }
+    return render(request, 'analytics/seller_performance.html', context)
+
+
+def daily_sales_report(request):
+    """Ежедневный отчет по продажам"""
+    from django.db.models import Sum, Count
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    today = timezone.now().date()
+    week_ago = today - timedelta(days=7)
+    
+    daily_stats = []
+    for i in range(7):
+        date = week_ago + timedelta(days=i)
+        purchases = Purchase.objects.filter(purchase_date__date=date)
+        daily_stats.append({
+            'date': date,
+            'count': purchases.count(),
+            'revenue': purchases.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        })
+    
+    context = {
+        'daily_stats': daily_stats,
+    }
+    return render(request, 'analytics/daily_sales.html', context)
+
+
+def customer_segments(request):
+    """Сегментация покупателей"""
+    from django.db.models import Sum, Count, Avg
+    
+    vip_customers = Buyer.objects.filter(is_vip=True).count()
+    regular_customers = Buyer.objects.filter(is_vip=False).count()
+    
+    customers_with_purchases = Buyer.objects.annotate(
+        purchase_count=Count('purchases'),
+        total_spent=Sum('purchases__total_amount')
+    ).filter(purchase_count__gt=0)
+    
+    high_value = customers_with_purchases.filter(total_spent__gte=10000).count()
+    medium_value = customers_with_purchases.filter(
+        total_spent__gte=5000, total_spent__lt=10000
+    ).count()
+    low_value = customers_with_purchases.filter(total_spent__lt=5000).count()
+    
+    context = {
+        'vip_customers': vip_customers,
+        'regular_customers': regular_customers,
+        'high_value': high_value,
+        'medium_value': medium_value,
+        'low_value': low_value,
+    }
+    return render(request, 'analytics/customer_segments.html', context)
+
+
+def inventory_status(request):
+    """Статус склада"""
+    from django.db.models import Sum, Count
+    
+    total_items = Assortment.objects.count()
+    in_stock = Assortment.objects.filter(stock_quantity__gt=0).count()
+    out_of_stock = Assortment.objects.filter(stock_quantity=0).count()
+    low_stock = Assortment.objects.filter(stock_quantity__lte=5, stock_quantity__gt=0).count()
+    
+    total_value = Assortment.objects.aggregate(
+        total=Sum('price')
+    )['total'] or 0
+    
+    context = {
+        'total_items': total_items,
+        'in_stock': in_stock,
+        'out_of_stock': out_of_stock,
+        'low_stock': low_stock,
+        'total_value': total_value,
+    }
+    return render(request, 'analytics/inventory_status.html', context)
+
+
+def top_products(request):
+    """Топ товаров"""
+    from django.db.models import Count
+    
+    # Пока просто сортируем по количеству на складе
+    top_products = Assortment.objects.order_by('-stock_quantity')[:10]
+    
+    context = {
+        'top_products': top_products,
+    }
+    return render(request, 'analytics/top_products.html', context)
+
+
+def purchase_trends(request):
+    """Тренды покупок"""
+    from django.db.models import Count
+    from django.utils import timezone
+    from datetime import timedelta
+    from collections import defaultdict
+    
+    # Статистика по способам оплаты
+    payment_stats = Purchase.objects.values('payment_method').annotate(
+        count=Count('id')
+    ).order_by('-count')
+    
+    # Статистика по месяцам
+    monthly_stats = defaultdict(int)
+    purchases = Purchase.objects.all()
+    for purchase in purchases:
+        month_key = purchase.purchase_date.strftime('%Y-%m')
+        monthly_stats[month_key] += 1
+    
+    context = {
+        'payment_stats': payment_stats,
+        'monthly_stats': dict(sorted(monthly_stats.items())),
+    }
+    return render(request, 'analytics/purchase_trends.html', context)

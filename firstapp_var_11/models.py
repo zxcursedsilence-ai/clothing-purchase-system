@@ -1,5 +1,8 @@
 from django.db import models
 from django.urls import reverse
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from django.core.exceptions import ValidationError
+import os
 
 
 # ============================================================================
@@ -299,6 +302,9 @@ class Seller(models.Model):
     def __str__(self):
         return f"{self.last_name} {self.first_name}"
 
+    def get_full_name(self):
+        return f"{self.last_name} {self.first_name}"
+
     def get_absolute_url(self):
         return reverse('seller_detail', args=[str(self.id)])
 
@@ -337,3 +343,366 @@ class SellerProfile(models.Model):
 
     def __str__(self):
         return f"Профиль: {self.seller}"
+
+
+# ============================================================================
+# ЗАДАЧА 3: МОДЕЛИ ДЛЯ POSTGRESQL (3-5 таблиц с промежуточной таблицей)
+# ============================================================================
+
+class DeliveryMethod(models.Model):
+    """Справочник способов доставки"""
+    name = models.CharField(
+        max_length=100,
+        verbose_name='Название способа доставки',
+        unique=True
+    )
+    description = models.TextField(
+        verbose_name='Описание',
+        blank=True
+    )
+    cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Стоимость доставки',
+        default=0,
+        validators=[MinValueValidator(0)]
+    )
+    delivery_time_days = models.IntegerField(
+        verbose_name='Срок доставки (дней)',
+        validators=[MinValueValidator(1), MaxValueValidator(365)]
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Активен'
+    )
+    icon = models.ImageField(
+        upload_to='delivery_icons/',
+        verbose_name='Иконка',
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        verbose_name = 'Способ доставки'
+        verbose_name_plural = 'Способы доставки'
+        ordering = ['name']
+        db_table = 'delivery_methods'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('delivery_method_detail', args=[str(self.id)])
+
+
+class BuyerProfile(models.Model):
+    """Расширенный профиль покупателя - связь 1:1 с Buyer"""
+    buyer = models.OneToOneField(
+        Buyer,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name='buyer_profile',
+        verbose_name='Покупатель'
+    )
+    photo = models.ImageField(
+        upload_to='buyer_photos/',
+        verbose_name='Фото покупателя',
+        blank=True,
+        null=True,
+        help_text='Загрузите фото покупателя'
+    )
+    passport_scan = models.FileField(
+        upload_to='buyer_documents/',
+        verbose_name='Скан паспорта',
+        blank=True,
+        null=True,
+        help_text='PDF или изображение паспорта'
+    )
+    address = models.TextField(
+        verbose_name='Адрес доставки',
+        blank=True
+    )
+    birth_date = models.DateField(
+        verbose_name='Дата рождения',
+        blank=True,
+        null=True
+    )
+    preferred_delivery_time = models.TimeField(
+        verbose_name='Предпочтительное время доставки',
+        blank=True,
+        null=True,
+        help_text='Время, когда удобно получать заказы'
+    )
+    notes = models.TextField(
+        verbose_name='Дополнительные заметки',
+        blank=True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания профиля'
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Дата обновления'
+    )
+
+    class Meta:
+        verbose_name = 'Профиль покупателя'
+        verbose_name_plural = 'Профили покупателей'
+        db_table = 'buyer_profiles'
+
+    def __str__(self):
+        return f"Профиль: {self.buyer.get_full_name()}"
+
+    def clean(self):
+        """Валидация данных"""
+        if self.birth_date:
+            from datetime import date
+            if self.birth_date > date.today():
+                raise ValidationError({'birth_date': 'Дата рождения не может быть в будущем'})
+
+    def get_absolute_url(self):
+        return reverse('buyer_profile_detail', args=[str(self.buyer.id)])
+
+
+class Order(models.Model):
+    """Заказ - главная (промежуточная) таблица с связями M:1"""
+    STATUS_CHOICES = [
+        ('pending', 'Ожидает обработки'),
+        ('processing', 'В обработке'),
+        ('shipped', 'Отправлен'),
+        ('delivered', 'Доставлен'),
+        ('cancelled', 'Отменен'),
+    ]
+
+    # Связи M:1 к справочникам
+    buyer = models.ForeignKey(
+        Buyer,
+        on_delete=models.PROTECT,  # Нельзя удалить покупателя с заказами
+        related_name='orders',
+        verbose_name='Покупатель'
+    )
+    seller = models.ForeignKey(
+        Seller,
+        on_delete=models.PROTECT,
+        related_name='orders',
+        verbose_name='Продавец',
+        blank=True,
+        null=True
+    )
+    delivery_method = models.ForeignKey(
+        DeliveryMethod,
+        on_delete=models.PROTECT,
+        related_name='orders',
+        verbose_name='Способ доставки'
+    )
+
+    # Основные поля
+    order_number = models.CharField(
+        max_length=20,
+        verbose_name='Номер заказа',
+        unique=True,
+        validators=[
+            RegexValidator(
+                regex=r'^ORD-\d{4}-\d{6}$',
+                message='Номер заказа должен быть в формате ORD-YYYY-NNNNNN'
+            )
+        ]
+    )
+    order_date = models.DateField(
+        verbose_name='Дата заказа',
+        auto_now_add=True
+    )
+    order_time = models.TimeField(
+        verbose_name='Время заказа',
+        auto_now_add=True
+    )
+    delivery_date = models.DateField(
+        verbose_name='Дата доставки',
+        blank=True,
+        null=True
+    )
+    delivery_time = models.TimeField(
+        verbose_name='Время доставки',
+        blank=True,
+        null=True
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        verbose_name='Статус заказа',
+        default='pending'
+    )
+    total_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Общая сумма заказа',
+        validators=[MinValueValidator(0)]
+    )
+    delivery_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Стоимость доставки',
+        default=0,
+        validators=[MinValueValidator(0)]
+    )
+    discount_percent = models.IntegerField(
+        verbose_name='Скидка (%)',
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+    
+    # Дополнительные поля
+    delivery_address = models.TextField(
+        verbose_name='Адрес доставки'
+    )
+    contact_phone = models.CharField(
+        max_length=20,
+        verbose_name='Контактный телефон',
+        validators=[
+            RegexValidator(
+                regex=r'^\+?1?\d{9,15}$',
+                message='Телефон должен быть в формате +1234567890'
+            )
+        ]
+    )
+    notes = models.TextField(
+        verbose_name='Примечания к заказу',
+        blank=True
+    )
+    
+    # Файлы и изображения
+    invoice_file = models.FileField(
+        upload_to='order_invoices/',
+        verbose_name='Файл счета',
+        blank=True,
+        null=True
+    )
+    delivery_confirmation_photo = models.ImageField(
+        upload_to='delivery_confirmations/',
+        verbose_name='Фото подтверждения доставки',
+        blank=True,
+        null=True
+    )
+
+    # Связь M:M с Assortment через OrderItem
+    items = models.ManyToManyField(
+        Assortment,
+        through='OrderItem',
+        related_name='orders',
+        verbose_name='Товары в заказе'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания'
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Дата обновления'
+    )
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+        ordering = ['-order_date', '-order_time']
+        db_table = 'orders'
+
+    def __str__(self):
+        return f"Заказ {self.order_number} - {self.buyer.get_full_name()}"
+
+    def clean(self):
+        """Валидация данных заказа"""
+        if self.delivery_date and self.order_date:
+            if self.delivery_date < self.order_date:
+                raise ValidationError({
+                    'delivery_date': 'Дата доставки не может быть раньше даты заказа'
+                })
+        
+        if self.discount_percent > 100:
+            raise ValidationError({
+                'discount_percent': 'Скидка не может быть больше 100%'
+            })
+
+    def get_total_with_discount(self):
+        """Расчет итоговой суммы со скидкой"""
+        discount_amount = (self.total_amount * self.discount_percent) / 100
+        return self.total_amount - discount_amount + self.delivery_cost
+
+    def get_absolute_url(self):
+        return reverse('order_detail', args=[str(self.id)])
+
+
+class OrderItem(models.Model):
+    """Промежуточная таблица для связи M:M между Order и Assortment"""
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name='order_items',
+        verbose_name='Заказ'
+    )
+    assortment = models.ForeignKey(
+        Assortment,
+        on_delete=models.PROTECT,
+        related_name='order_items',
+        verbose_name='Товар'
+    )
+    quantity = models.IntegerField(
+        verbose_name='Количество',
+        validators=[MinValueValidator(1)]
+    )
+    unit_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Цена за единицу',
+        validators=[MinValueValidator(0)]
+    )
+    discount_percent = models.IntegerField(
+        verbose_name='Скидка на позицию (%)',
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+    size = models.ForeignKey(
+        Size,
+        on_delete=models.PROTECT,
+        verbose_name='Размер',
+        blank=True,
+        null=True
+    )
+    notes = models.TextField(
+        verbose_name='Примечания к позиции',
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = 'Позиция заказа'
+        verbose_name_plural = 'Позиции заказов'
+        unique_together = ['order', 'assortment', 'size']
+        db_table = 'order_items'
+
+    def __str__(self):
+        return f"{self.order.order_number} - {self.assortment.name} x{self.quantity}"
+
+    def get_subtotal(self):
+        """Расчет подытога по позиции"""
+        subtotal = self.unit_price * self.quantity
+        discount_amount = (subtotal * self.discount_percent) / 100
+        return subtotal - discount_amount
+
+    def clean(self):
+        """Валидация позиции заказа"""
+        if self.quantity <= 0:
+            raise ValidationError({
+                'quantity': 'Количество должно быть больше 0'
+            })
+        
+        if self.unit_price < 0:
+            raise ValidationError({
+                'unit_price': 'Цена не может быть отрицательной'
+            })
+        
+        # Проверка наличия товара на складе
+        if self.assortment.stock_quantity < self.quantity:
+            raise ValidationError({
+                'quantity': f'Недостаточно товара на складе. Доступно: {self.assortment.stock_quantity}'
+            })

@@ -1,0 +1,35 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Детали размера</h1>
+    <div>
+        <a href="{% url 'size_list' %}" class="btn-crud btn-view">← Назад к списку</a>
+        <a href="{% url 'size_update' size.id %}" class="btn-crud btn-edit">Редактировать</a>
+        <a href="{% url 'size_delete' size.id %}" class="btn-crud btn-delete">Удалить</a>
+    </div>
+</div>
+
+<div class="detail-container">
+    <h2>{{ size }}</h2>
+    <table class="table-crud">
+        <tr>
+            <th>ID</th>
+            <td>{{ size.id }}</td>
+        </tr>
+        <tr>
+            <th>Значение размера</th>
+            <td>{{ size.size_value }}</td>
+        </tr>
+        <tr>
+            <th>Система размеров</th>
+            <td>{{ size.get_system_display }}</td>
+        </tr>
+        <tr>
+            <th>Описание</th>
+            <td>{{ size.description|default:"—" }}</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
+

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Ассортимент по размерам{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Ассортимент по размерам</h1>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Размер</th>
+            <th>Система</th>
+            <th>Количество товаров</th>
+            <th>Общее количество на складе</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for size_stat in size_stats %}
+        <tr>
+            <td>{{ size_stat.size_value }}</td>
+            <td>{{ size_stat.get_system_display }}</td>
+            <td>{{ size_stat.items_count|default:0 }}</td>
+            <td>{{ size_stat.total_quantity|default:0 }} шт.</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="text-center">Нет данных</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

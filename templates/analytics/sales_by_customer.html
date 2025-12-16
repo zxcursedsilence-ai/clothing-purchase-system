@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Продажи по покупателям{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Продажи по покупателям</h1>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Покупатель</th>
+            <th>Email</th>
+            <th>Количество покупок</th>
+            <th>Общая сумма</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers_stats %}
+        <tr>
+            <td>{{ customer.get_full_name }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.total_purchases|default:0 }}</td>
+            <td>{{ customer.total_spent|default:0|floatformat:2 }} руб.</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="text-center">Нет данных</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

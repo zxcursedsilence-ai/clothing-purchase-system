@@ -1,0 +1,81 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Детали покупателя</h1>
+    <div>
+        <a href="{% url 'buyer_list' %}" class="btn-crud btn-view">← Назад к списку</a>
+        <a href="{% url 'buyer_update' buyer.id %}" class="btn-crud btn-edit">Редактировать</a>
+        <a href="{% url 'buyer_delete' buyer.id %}" class="btn-crud btn-delete">Удалить</a>
+    </div>
+</div>
+
+<div class="detail-container">
+    <h2>{{ buyer.get_full_name }}</h2>
+    <table class="table-crud">
+        <tr>
+            <th>ID</th>
+            <td>{{ buyer.id }}</td>
+        </tr>
+        <tr>
+            <th>Имя</th>
+            <td>{{ buyer.first_name }}</td>
+        </tr>
+        <tr>
+            <th>Фамилия</th>
+            <td>{{ buyer.last_name }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ buyer.email }}</td>
+        </tr>
+        <tr>
+            <th>Телефон</th>
+            <td>{{ buyer.phone|default:"—" }}</td>
+        </tr>
+        <tr>
+            <th>Пол</th>
+            <td>{{ buyer.get_gender_display }}</td>
+        </tr>
+        <tr>
+            <th>VIP клиент</th>
+            <td>{% if buyer.is_vip %}Да{% else %}Нет{% endif %}</td>
+        </tr>
+        <tr>
+            <th>Дата регистрации</th>
+            <td>{{ buyer.registration_date|date:"d.m.Y" }}</td>
+        </tr>
+    </table>
+
+    <h3 style="margin-top: 30px;">Покупки покупателя ({{ purchases.count }})</h3>
+    {% if purchases %}
+    <table class="table-crud">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Дата</th>
+                <th>Сумма</th>
+                <th>Способ оплаты</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in purchases %}
+            <tr>
+                <td>{{ purchase.id }}</td>
+                <td>{{ purchase.purchase_date|date:"d.m.Y H:i" }}</td>
+                <td>{{ purchase.total_amount }} руб.</td>
+                <td>{{ purchase.get_payment_method_display }}</td>
+                <td>
+                    <a href="{% url 'purchase_detail' purchase.id %}" class="btn-crud btn-view">Просмотр</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>У покупателя пока нет покупок.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

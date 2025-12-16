@@ -1,0 +1,35 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Детали типа одежды</h1>
+    <div>
+        <a href="{% url 'clothestype_list' %}" class="btn-crud btn-view">← Назад к списку</a>
+        <a href="{% url 'clothestype_update' clothestype.id %}" class="btn-crud btn-edit">Редактировать</a>
+        <a href="{% url 'clothestype_delete' clothestype.id %}" class="btn-crud btn-delete">Удалить</a>
+    </div>
+</div>
+
+<div class="detail-container">
+    <h2>{{ clothestype.name }}</h2>
+    <table class="table-crud">
+        <tr>
+            <th>ID</th>
+            <td>{{ clothestype.id }}</td>
+        </tr>
+        <tr>
+            <th>Название</th>
+            <td>{{ clothestype.name }}</td>
+        </tr>
+        <tr>
+            <th>Описание</th>
+            <td>{{ clothestype.description|default:"—" }}</td>
+        </tr>
+        <tr>
+            <th>Дата создания</th>
+            <td>{{ clothestype.created_at|date:"d.m.Y H:i" }}</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
+

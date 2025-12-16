@@ -1,0 +1,73 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Детали товара</h1>
+    <div>
+        <a href="{% url 'assortment_list' %}" class="btn-crud btn-view">← Назад к списку</a>
+        <a href="{% url 'assortment_update' assortment.id %}" class="btn-crud btn-edit">Редактировать</a>
+        <a href="{% url 'assortment_delete' assortment.id %}" class="btn-crud btn-delete">Удалить</a>
+    </div>
+</div>
+
+<div class="detail-container">
+    <h2>{{ assortment.name }}</h2>
+    <table class="table-crud">
+        <tr>
+            <th>ID</th>
+            <td>{{ assortment.id }}</td>
+        </tr>
+        <tr>
+            <th>Название</th>
+            <td>{{ assortment.name }}</td>
+        </tr>
+        <tr>
+            <th>Тип одежды</th>
+            <td>{{ assortment.clothes_type.name }}</td>
+        </tr>
+        <tr>
+            <th>Категория</th>
+            <td>{{ assortment.get_category_display }}</td>
+        </tr>
+        <tr>
+            <th>Цена</th>
+            <td>{{ assortment.price }} руб.</td>
+        </tr>
+        <tr>
+            <th>Количество на складе</th>
+            <td>{{ assortment.stock_quantity }} шт.</td>
+        </tr>
+        <tr>
+            <th>Описание</th>
+            <td>{{ assortment.description|default:"—" }}</td>
+        </tr>
+        <tr>
+            <th>Дата добавления</th>
+            <td>{{ assortment.created_at|date:"d.m.Y H:i" }}</td>
+        </tr>
+    </table>
+
+    <h3 style="margin-top: 30px;">Доступные размеры ({{ sizes_available.count }})</h3>
+    {% if sizes_available %}
+    <table class="table-crud">
+        <thead>
+            <tr>
+                <th>Размер</th>
+                <th>Количество</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for size_info in sizes_available %}
+            <tr>
+                <td>{{ size_info.size }}</td>
+                <td>{{ size_info.quantity }} шт.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Размеры не указаны.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

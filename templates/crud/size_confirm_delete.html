@@ -1,0 +1,18 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Удаление размера</h1>
+</div>
+
+<div class="form-crud">
+    <p>Вы уверены, что хотите удалить размер <strong>{{ size }}</strong>?</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-crud btn-delete">Да, удалить</button>
+        <a href="{% url 'size_detail' size.id %}" class="btn-crud btn-view">Отмена</a>
+    </form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,67 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Детали продавца</h1>
+    <div>
+        <a href="{% url 'seller_list' %}" class="btn-crud btn-view">← Назад к списку</a>
+        <a href="{% url 'seller_update' seller.id %}" class="btn-crud btn-edit">Редактировать</a>
+        <a href="{% url 'seller_delete' seller.id %}" class="btn-crud btn-delete">Удалить</a>
+    </div>
+</div>
+
+<div class="detail-container">
+    <h2>{{ seller }}</h2>
+    <table class="table-crud">
+        <tr>
+            <th>ID</th>
+            <td>{{ seller.id }}</td>
+        </tr>
+        <tr>
+            <th>Имя</th>
+            <td>{{ seller.first_name }}</td>
+        </tr>
+        <tr>
+            <th>Фамилия</th>
+            <td>{{ seller.last_name }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ seller.email }}</td>
+        </tr>
+        <tr>
+            <th>Дата найма</th>
+            <td>{{ seller.hire_date|date:"d.m.Y" }}</td>
+        </tr>
+    </table>
+
+    {% if seller.profile %}
+    <h3 style="margin-top: 30px;">Профиль продавца</h3>
+    <table class="table-crud">
+        <tr>
+            <th>Телефон</th>
+            <td>{{ seller.profile.phone }}</td>
+        </tr>
+        <tr>
+            <th>Адрес</th>
+            <td>{{ seller.profile.address }}</td>
+        </tr>
+        <tr>
+            <th>Дата рождения</th>
+            <td>{{ seller.profile.birth_date|date:"d.m.Y" }}</td>
+        </tr>
+        <tr>
+            <th>Стаж (лет)</th>
+            <td>{{ seller.profile.experience_years }}</td>
+        </tr>
+        <tr>
+            <th>Отдел</th>
+            <td>{{ seller.profile.department }}</td>
+        </tr>
+    </table>
+    {% else %}
+    <p style="margin-top: 30px;">Профиль продавца не создан.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

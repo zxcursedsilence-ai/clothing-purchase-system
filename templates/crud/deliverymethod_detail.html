@@ -1,0 +1,48 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Детали способа доставки</h1>
+    <div>
+        <a href="{% url 'delivery_method_list' %}" class="btn-crud btn-view">← Назад к списку</a>
+        <a href="{% url 'delivery_method_update' delivery_method.id %}" class="btn-crud btn-edit">Редактировать</a>
+        <a href="{% url 'delivery_method_delete' delivery_method.id %}" class="btn-crud btn-delete">Удалить</a>
+    </div>
+</div>
+
+<div class="detail-container">
+    <h2>{{ delivery_method.name }}</h2>
+    {% if delivery_method.icon %}
+    <div style="margin-bottom: 20px;">
+        <img src="{{ delivery_method.icon.url }}" alt="{{ delivery_method.name }}" style="max-width: 300px;">
+    </div>
+    {% endif %}
+    <table class="table-crud">
+        <tr>
+            <th>ID</th>
+            <td>{{ delivery_method.id }}</td>
+        </tr>
+        <tr>
+            <th>Название</th>
+            <td>{{ delivery_method.name }}</td>
+        </tr>
+        <tr>
+            <th>Описание</th>
+            <td>{{ delivery_method.description|default:"—" }}</td>
+        </tr>
+        <tr>
+            <th>Стоимость доставки</th>
+            <td>{{ delivery_method.cost }} руб.</td>
+        </tr>
+        <tr>
+            <th>Срок доставки</th>
+            <td>{{ delivery_method.delivery_time_days }} дней</td>
+        </tr>
+        <tr>
+            <th>Статус</th>
+            <td>{% if delivery_method.is_active %}<span style="color: green;">✓ Активен</span>{% else %}<span style="color: red;">✗ Неактивен</span>{% endif %}</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
+

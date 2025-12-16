@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Эффективность продавцов{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Эффективность продавцов</h1>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Продавец</th>
+            <th>Email</th>
+            <th>Дата найма</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for seller in sellers %}
+        <tr>
+            <td>{{ seller.get_full_name }}</td>
+            <td>{{ seller.email }}</td>
+            <td>{{ seller.hire_date|date:"d.m.Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="text-center">Нет данных</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

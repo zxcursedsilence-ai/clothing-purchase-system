@@ -1,0 +1,19 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Удаление покупателя</h1>
+</div>
+
+<div class="form-crud">
+    <p>Вы уверены, что хотите удалить покупателя <strong>{{ buyer.get_full_name }}</strong>?</p>
+    <p class="text-danger">Внимание: Все покупки этого покупателя также будут удалены!</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-crud btn-delete">Да, удалить</button>
+        <a href="{% url 'buyer_detail' buyer.id %}" class="btn-crud btn-view">Отмена</a>
+    </form>
+</div>
+{% endblock %}
+

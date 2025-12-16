@@ -1,0 +1,58 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>{% if object %}Редактировать способ доставки{% else %}Добавить способ доставки{% endif %}</h1>
+    <a href="{% url 'delivery_method_list' %}" class="btn-crud btn-view">← Назад</a>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="form-crud">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_name">Название *:</label>
+        {{ form.name }}
+        {% if form.name.errors %}<div class="error">{{ form.name.errors }}</div>{% endif %}
+    </div>
+    <div class="form-group">
+        <label for="id_description">Описание:</label>
+        {{ form.description }}
+        {% if form.description.errors %}<div class="error">{{ form.description.errors }}</div>{% endif %}
+    </div>
+    <div class="form-group">
+        <label for="id_cost">Стоимость доставки (руб.) *:</label>
+        {{ form.cost }}
+        {% if form.cost.errors %}<div class="error">{{ form.cost.errors }}</div>{% endif %}
+    </div>
+    <div class="form-group">
+        <label for="id_delivery_time_days">Срок доставки (дней) *:</label>
+        {{ form.delivery_time_days }}
+        {% if form.delivery_time_days.errors %}<div class="error">{{ form.delivery_time_days.errors }}</div>{% endif %}
+    </div>
+    <div class="form-group">
+        <label for="id_is_active">Активен:</label>
+        {{ form.is_active }}
+        {% if form.is_active.errors %}<div class="error">{{ form.is_active.errors }}</div>{% endif %}
+    </div>
+    <div class="form-group">
+        <label for="id_icon">Иконка:</label>
+        {{ form.icon }}
+        {% if form.icon.errors %}<div class="error">{{ form.icon.errors }}</div>{% endif %}
+        {% if object and object.icon %}
+        <div style="margin-top: 10px;">
+            <p>Текущая иконка:</p>
+            <img src="{{ object.icon.url }}" alt="{{ object.name }}" style="max-width: 200px;">
+        </div>
+        {% endif %}
+    </div>
+    <button type="submit" class="btn-crud btn-create">Сохранить</button>
+</form>
+
+<style>
+    .error {
+        color: #f44336;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+</style>
+{% endblock %}
+

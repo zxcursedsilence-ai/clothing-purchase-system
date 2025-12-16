@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Статус склада{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Статус склада</h1>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="text-primary">{{ total_items }}</h3>
+                <p class="text-muted">Всего товаров</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="text-success">{{ in_stock }}</h3>
+                <p class="text-muted">В наличии</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="text-danger">{{ out_of_stock }}</h3>
+                <p class="text-muted">Нет в наличии</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="text-warning">{{ low_stock }}</h3>
+                <p class="text-muted">Низкий остаток</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5>Общая стоимость товаров на складе</h5>
+                <h2 class="text-primary">{{ total_value|floatformat:2 }} руб.</h2>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

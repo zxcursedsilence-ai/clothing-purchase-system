@@ -1,0 +1,43 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Детали покупки</h1>
+    <div>
+        <a href="{% url 'purchase_list' %}" class="btn-crud btn-view">← Назад к списку</a>
+        <a href="{% url 'purchase_update' purchase.id %}" class="btn-crud btn-edit">Редактировать</a>
+        <a href="{% url 'purchase_delete' purchase.id %}" class="btn-crud btn-delete">Удалить</a>
+    </div>
+</div>
+
+<div class="detail-container">
+    <h2>Покупка #{{ purchase.id }}</h2>
+    <table class="table-crud">
+        <tr>
+            <th>ID</th>
+            <td>{{ purchase.id }}</td>
+        </tr>
+        <tr>
+            <th>Покупатель</th>
+            <td><a href="{% url 'buyer_detail' purchase.buyer.id %}">{{ purchase.buyer.get_full_name }}</a></td>
+        </tr>
+        <tr>
+            <th>Дата покупки</th>
+            <td>{{ purchase.purchase_date|date:"d.m.Y H:i" }}</td>
+        </tr>
+        <tr>
+            <th>Сумма покупки</th>
+            <td>{{ purchase.total_amount }} руб.</td>
+        </tr>
+        <tr>
+            <th>Способ оплаты</th>
+            <td>{{ purchase.get_payment_method_display }}</td>
+        </tr>
+        <tr>
+            <th>Примечания</th>
+            <td>{{ purchase.notes|default:"—" }}</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}
+

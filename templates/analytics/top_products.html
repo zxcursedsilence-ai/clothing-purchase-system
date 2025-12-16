@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Топ товаров{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Топ товаров</h1>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Название</th>
+            <th>Тип</th>
+            <th>Цена</th>
+            <th>На складе</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in top_products %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.clothes_type.name }}</td>
+            <td>{{ product.price }} руб.</td>
+            <td>{{ product.stock_quantity }} шт.</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">Нет данных</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

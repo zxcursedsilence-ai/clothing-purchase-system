@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Ежедневный отчет{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Ежедневный отчет по продажам (последние 7 дней)</h1>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Количество покупок</th>
+            <th>Выручка</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stat in daily_stats %}
+        <tr>
+            <td>{{ stat.date|date:"d.m.Y" }}</td>
+            <td>{{ stat.count }}</td>
+            <td>{{ stat.revenue|floatformat:2 }} руб.</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="text-center">Нет данных</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

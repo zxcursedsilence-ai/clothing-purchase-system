@@ -1,0 +1,18 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>Удаление типа одежды</h1>
+</div>
+
+<div class="form-crud">
+    <p>Вы уверены, что хотите удалить тип одежды <strong>{{ clothestype.name }}</strong>?</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-crud btn-delete">Да, удалить</button>
+        <a href="{% url 'clothestype_detail' clothestype.id %}" class="btn-crud btn-view">Отмена</a>
+    </form>
+</div>
+{% endblock %}
+

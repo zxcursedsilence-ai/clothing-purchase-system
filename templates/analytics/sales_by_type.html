@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Продажи по типам одежды{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Продажи по типам одежды</h1>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Тип одежды</th>
+            <th>Количество товаров</th>
+            <th>Общая стоимость</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for type_stat in type_stats %}
+        <tr>
+            <td>{{ type_stat.name }}</td>
+            <td>{{ type_stat.items_count|default:0 }}</td>
+            <td>{{ type_stat.total_value|default:0|floatformat:2 }} руб.</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="text-center">Нет данных</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

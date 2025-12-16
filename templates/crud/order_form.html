@@ -1,0 +1,142 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>{% if object %}Редактировать заказ{% else %}Создать заказ{% endif %}</h1>
+    <a href="{% url 'order_list' %}" class="btn-crud btn-view">← Назад</a>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="form-crud">
+    {% csrf_token %}
+    
+    <h3>Основная информация</h3>
+    <div class="form-group">
+        <label for="id_buyer">Покупатель *:</label>
+        {{ form.buyer }}
+        {% if form.buyer.errors %}<div class="error">{{ form.buyer.errors }}</div>{% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_seller">Продавец:</label>
+        {{ form.seller }}
+        {% if form.seller.errors %}<div class="error">{{ form.seller.errors }}</div>{% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_delivery_method">Способ доставки *:</label>
+        {{ form.delivery_method }}
+        {% if form.delivery_method.errors %}<div class="error">{{ form.delivery_method.errors }}</div>{% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_order_number">Номер заказа *:</label>
+        {{ form.order_number }}
+        <small>Формат: ORD-YYYY-NNNNNN</small>
+        {% if form.order_number.errors %}<div class="error">{{ form.order_number.errors }}</div>{% endif %}
+    </div>
+    
+    <h3>Даты и время</h3>
+    <div class="form-group">
+        <label for="id_delivery_date">Дата доставки:</label>
+        {{ form.delivery_date }}
+        {% if form.delivery_date.errors %}<div class="error">{{ form.delivery_date.errors }}</div>{% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_delivery_time">Время доставки:</label>
+        {{ form.delivery_time }}
+        {% if form.delivery_time.errors %}<div class="error">{{ form.delivery_time.errors }}</div>{% endif %}
+    </div>
+    
+    <h3>Статус и финансы</h3>
+    <div class="form-group">
+        <label for="id_status">Статус заказа:</label>
+        {{ form.status }}
+        {% if form.status.errors %}<div class="error">{{ form.status.errors }}</div>{% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_total_amount">Общая сумма заказа *:</label>
+        {{ form.total_amount }}
+        {% if form.total_amount.errors %}<div class="error">{{ form.total_amount.errors }}</div>{% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_delivery_cost">Стоимость доставки:</label>
+        {{ form.delivery_cost }}
+        {% if form.delivery_cost.errors %}<div class="error">{{ form.delivery_cost.errors }}</div>{% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_discount_percent">Скидка (%):</label>
+        {{ form.discount_percent }}
+        {% if form.discount_percent.errors %}<div class="error">{{ form.discount_percent.errors }}</div>{% endif %}
+    </div>
+    
+    <h3>Доставка</h3>
+    <div class="form-group">
+        <label for="id_delivery_address">Адрес доставки *:</label>
+        {{ form.delivery_address }}
+        {% if form.delivery_address.errors %}<div class="error">{{ form.delivery_address.errors }}</div>{% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_contact_phone">Контактный телефон *:</label>
+        {{ form.contact_phone }}
+        <small>Формат: +1234567890</small>
+        {% if form.contact_phone.errors %}<div class="error">{{ form.contact_phone.errors }}</div>{% endif %}
+    </div>
+    
+    <h3>Файлы</h3>
+    <div class="form-group">
+        <label for="id_invoice_file">Файл счета:</label>
+        {{ form.invoice_file }}
+        {% if form.invoice_file.errors %}<div class="error">{{ form.invoice_file.errors }}</div>{% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_delivery_confirmation_photo">Фото подтверждения доставки:</label>
+        {{ form.delivery_confirmation_photo }}
+        {% if form.delivery_confirmation_photo.errors %}<div class="error">{{ form.delivery_confirmation_photo.errors }}</div>{% endif %}
+    </div>
+    
+    <h3>Дополнительно</h3>
+    <div class="form-group">
+        <label for="id_notes">Примечания:</label>
+        {{ form.notes }}
+        {% if form.notes.errors %}<div class="error">{{ form.notes.errors }}</div>{% endif %}
+    </div>
+    
+    <button type="submit" class="btn-crud btn-create">Сохранить</button>
+</form>
+
+<style>
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .form-group small {
+        display: block;
+        color: #666;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+    .error {
+        color: #f44336;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+    h3 {
+        margin-top: 30px;
+        margin-bottom: 15px;
+        color: #4CAF50;
+        border-bottom: 2px solid #4CAF50;
+        padding-bottom: 5px;
+    }
+</style>
+{% endblock %}
+

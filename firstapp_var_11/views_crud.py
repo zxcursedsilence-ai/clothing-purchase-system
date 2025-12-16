@@ -3,7 +3,9 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
-from .forms import *
+from .forms import (
+    DeliveryMethodForm, BuyerProfileForm, OrderForm, OrderItemForm
+)
 
 
 # ============================================================================
@@ -189,3 +191,215 @@ class SellerDeleteView(DeleteView):
     model = Seller
     template_name = 'crud/seller_confirm_delete.html'
     success_url = reverse_lazy('seller_list')
+
+
+# ============================================================================
+# CRUD для Size (для задачи 2.3)
+# ============================================================================
+
+class SizeListView(ListView):
+    model = Size
+    template_name = 'crud/size_list.html'
+    context_object_name = 'sizes'
+    paginate_by = 15
+
+
+class SizeDetailView(DetailView):
+    model = Size
+    template_name = 'crud/size_detail.html'
+    context_object_name = 'size'
+
+
+class SizeCreateView(CreateView):
+    model = Size
+    template_name = 'crud/size_form.html'
+    fields = ['size_value', 'system', 'description']
+    success_url = reverse_lazy('size_list')
+
+
+class SizeUpdateView(UpdateView):
+    model = Size
+    template_name = 'crud/size_form.html'
+    fields = ['size_value', 'system', 'description']
+    success_url = reverse_lazy('size_list')
+
+
+class SizeDeleteView(DeleteView):
+    model = Size
+    template_name = 'crud/size_confirm_delete.html'
+    success_url = reverse_lazy('size_list')
+
+
+# ============================================================================
+# Дополнительные CRUD для Purchase (полный список и детали)
+# ============================================================================
+
+class PurchaseListView(ListView):
+    model = Purchase
+    template_name = 'crud/purchase_list.html'
+    context_object_name = 'purchases'
+    paginate_by = 20
+    ordering = ['-purchase_date']
+
+
+class PurchaseDetailView(DetailView):
+    model = Purchase
+    template_name = 'crud/purchase_detail.html'
+    context_object_name = 'purchase'
+
+
+# ============================================================================
+# Алиасы для совместимости (Customer -> Buyer)
+# ============================================================================
+
+# Для совместимости с существующими ссылками
+CustomerListView = BuyerListView
+CustomerDetailView = BuyerDetailView
+CustomerCreateView = BuyerCreateView
+CustomerUpdateView = BuyerUpdateView
+CustomerDeleteView = BuyerDeleteView
+
+# Алиасы для ClothesType
+ClothingTypeListView = ClothesTypeListView
+ClothingTypeCreateView = ClothesTypeCreateView
+ClothingTypeUpdateView = ClothesTypeUpdateView
+ClothingTypeDeleteView = ClothesTypeDeleteView
+
+
+# ============================================================================
+# ЗАДАЧА 3: CRUD ДЛЯ POSTGRESQL МОДЕЛЕЙ
+# ============================================================================
+
+# DeliveryMethod CRUD
+class DeliveryMethodListView(ListView):
+    model = DeliveryMethod
+    template_name = 'crud/deliverymethod_list.html'
+    context_object_name = 'delivery_methods'
+    paginate_by = 10
+
+
+class DeliveryMethodDetailView(DetailView):
+    model = DeliveryMethod
+    template_name = 'crud/deliverymethod_detail.html'
+    context_object_name = 'delivery_method'
+
+
+class DeliveryMethodCreateView(CreateView):
+    model = DeliveryMethod
+    template_name = 'crud/deliverymethod_form.html'
+    form_class = DeliveryMethodForm
+    success_url = reverse_lazy('delivery_method_list')
+
+
+class DeliveryMethodUpdateView(UpdateView):
+    model = DeliveryMethod
+    template_name = 'crud/deliverymethod_form.html'
+    form_class = DeliveryMethodForm
+    success_url = reverse_lazy('delivery_method_list')
+
+
+class DeliveryMethodDeleteView(DeleteView):
+    model = DeliveryMethod
+    template_name = 'crud/deliverymethod_confirm_delete.html'
+    success_url = reverse_lazy('delivery_method_list')
+
+
+# BuyerProfile CRUD
+class BuyerProfileListView(ListView):
+    model = BuyerProfile
+    template_name = 'crud/buyerprofile_list.html'
+    context_object_name = 'profiles'
+    paginate_by = 15
+
+
+class BuyerProfileDetailView(DetailView):
+    model = BuyerProfile
+    template_name = 'crud/buyerprofile_detail.html'
+    context_object_name = 'profile'
+
+
+class BuyerProfileCreateView(CreateView):
+    model = BuyerProfile
+    template_name = 'crud/buyerprofile_form.html'
+    form_class = BuyerProfileForm
+    success_url = reverse_lazy('buyer_profile_list')
+
+
+class BuyerProfileUpdateView(UpdateView):
+    model = BuyerProfile
+    template_name = 'crud/buyerprofile_form.html'
+    form_class = BuyerProfileForm
+    success_url = reverse_lazy('buyer_profile_list')
+
+
+class BuyerProfileDeleteView(DeleteView):
+    model = BuyerProfile
+    template_name = 'crud/buyerprofile_confirm_delete.html'
+    success_url = reverse_lazy('buyer_profile_list')
+
+
+# Order CRUD
+class OrderListView(ListView):
+    model = Order
+    template_name = 'crud/order_list.html'
+    context_object_name = 'orders'
+    paginate_by = 20
+    ordering = ['-order_date', '-order_time']
+
+
+class OrderDetailView(DetailView):
+    model = Order
+    template_name = 'crud/order_detail.html'
+    context_object_name = 'order'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order_items'] = self.object.order_items.all()
+        return context
+
+
+class OrderCreateView(CreateView):
+    model = Order
+    template_name = 'crud/order_form.html'
+    form_class = OrderForm
+    success_url = reverse_lazy('order_list')
+
+
+class OrderUpdateView(UpdateView):
+    model = Order
+    template_name = 'crud/order_form.html'
+    form_class = OrderForm
+    success_url = reverse_lazy('order_list')
+
+
+class OrderDeleteView(DeleteView):
+    model = Order
+    template_name = 'crud/order_confirm_delete.html'
+    success_url = reverse_lazy('order_list')
+
+
+# OrderItem CRUD
+class OrderItemCreateView(CreateView):
+    model = OrderItem
+    template_name = 'crud/orderitem_form.html'
+    form_class = OrderItemForm
+    
+    def get_success_url(self):
+        return reverse_lazy('order_detail', args=[self.object.order.id])
+
+
+class OrderItemUpdateView(UpdateView):
+    model = OrderItem
+    template_name = 'crud/orderitem_form.html'
+    form_class = OrderItemForm
+    
+    def get_success_url(self):
+        return reverse_lazy('order_detail', args=[self.object.order.id])
+
+
+class OrderItemDeleteView(DeleteView):
+    model = OrderItem
+    template_name = 'crud/orderitem_confirm_delete.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('order_detail', args=[self.object.order.id])

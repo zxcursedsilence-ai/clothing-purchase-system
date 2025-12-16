@@ -1,0 +1,30 @@
+{% extends 'crud/base_crud.html' %}
+
+{% block crud_content %}
+<div class="crud-header">
+    <h1>{% if object %}Редактировать продавца{% else %}Добавить продавца{% endif %}</h1>
+    <a href="{% url 'seller_list' %}" class="btn-crud btn-view">← Назад</a>
+</div>
+
+<form method="post" class="form-crud">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_first_name">Имя:</label>
+        {{ form.first_name }}
+    </div>
+    <div class="form-group">
+        <label for="id_last_name">Фамилия:</label>
+        {{ form.last_name }}
+    </div>
+    <div class="form-group">
+        <label for="id_email">Email:</label>
+        {{ form.email }}
+    </div>
+    <div class="form-group">
+        <label for="id_hire_date">Дата найма:</label>
+        {{ form.hire_date }}
+    </div>
+    <button type="submit" class="btn-crud btn-create">Сохранить</button>
+</form>
+{% endblock %}
+

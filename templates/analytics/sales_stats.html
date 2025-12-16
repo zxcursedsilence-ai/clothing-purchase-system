@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Статистика продаж{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Статистика продаж</h1>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="text-primary">{{ total_revenue|floatformat:2 }}</h3>
+                <p class="text-muted">Общая выручка (руб.)</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="text-success">{{ total_purchases }}</h3>
+                <p class="text-muted">Всего покупок</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="text-info">{{ avg_purchase|floatformat:2 }}</h3>
+                <p class="text-muted">Средний чек (руб.)</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3 class="text-warning">{{ recent_revenue|floatformat:2 }}</h3>
+                <p class="text-muted">Выручка за 30 дней</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

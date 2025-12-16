@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Сегментация покупателей{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Сегментация покупателей</h1>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5>VIP клиенты</h5>
+                <h2 class="text-primary">{{ vip_customers }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5>Обычные клиенты</h5>
+                <h2 class="text-info">{{ regular_customers }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5>Высокая ценность</h5>
+                <h3 class="text-success">{{ high_value }}</h3>
+                <p class="text-muted">≥ 10000 руб.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5>Средняя ценность</h5>
+                <h3 class="text-warning">{{ medium_value }}</h3>
+                <p class="text-muted">5000-9999 руб.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5>Низкая ценность</h5>
+                <h3 class="text-secondary">{{ low_value }}</h3>
+                <p class="text-muted">< 5000 руб.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
